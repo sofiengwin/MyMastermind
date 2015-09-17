@@ -1,16 +1,15 @@
+require 'pry'
 class Game
 attr_accessor :user_name, :user_level
   def initialize
   #@user_name = user_name
   @player = Hash.new(0)
   @result = {matches: [], nomatches: [], missed_matches: []}
-  @computer_code = %w{G G Y B}
   end
 
   def welcome
     puts Message.welcome
     input = gets.chomp
-
     case input
     when "p"
       choose_level
@@ -18,6 +17,8 @@ attr_accessor :user_name, :user_level
       system(exit)
     when "i"
       Message.show_background
+    else
+      puts "Option Invalid. Try following the instructions"
     end
   end
 
@@ -33,22 +34,39 @@ attr_accessor :user_name, :user_level
     start
   end
 
+  def generate_sequence
+    colors = %w{A B C D E F G H}
+    generated_code = []
+    computer_choice_array_length(@player[:level]).times{ generated_code << colors[rand(computer_choice_length(@player[:level]))] }
+    generated_code
+end
+
   def start
+    @computer_code = generate_sequence
+    @player[:start_time] = Time.now
       trial_count = 1
     puts Message.generated_sequence
     until trial_count >= 12
       user_guess = gets.chomp
       userchoice = user_guess.upcase.split("")
-      if @computer_code == user_guess.upcase.split("")
+      if @computer_code == @result[:matches]
           puts "Congratulations you have completed the game in #{trial_count}"
+        @player[:end_time] = Time.now
+        @player[:trial_count] = trial_count
+        #binding.pry
           break
-      elsif too_long(userchoice) || too_short(userchoice)
-          puts "Please enter a valid length"
+        elsif user_guess == "q"
+          system(exit)
+        elsif user_guess == "c"
+          puts @computer_code
+        elsif too_long(user_guess) || too_short(user_guess)
+            puts "Letter count not enough increase by #{computer_choice_array_length(@player[:level])}"
       else
         puts "Try again"
         evaluate_guess(user_guess)
-        puts "#{@result[:matches]} is #{trial_count}"
+        puts "your choices #{userchoice} matched#{@result[:matches]} is #{trial_count}"
          trial_count += 1
+         #binding.pry
       end
     end
   end
@@ -60,7 +78,7 @@ attr_accessor :user_name, :user_level
     combined_array.each do |array|
         @combined_array_hashed[array[0]] = array[1]
     end
-
+    #binding.pry
     @combined_array_hashed.each do |key, value|
       if key == value
         @result[:matches] << value
@@ -74,11 +92,31 @@ attr_accessor :user_name, :user_level
   end
 
   def too_long(user_guess)
-      user_guess.length > 4
+      user_guess.length > computer_choice_array_length(@player[:level])
   end
 
   def too_short(user_guess)
-    user_guess.length < 4
+    user_guess.length < computer_choice_array_length(@player[:level])
+  end
+
+  def computer_choice_array_length(player)
+    if player == "2"
+    return 6
+    elsif player == "3"
+    return 8
+  else
+    return 4
+    end
+  end
+
+  def computer_choice_length(player)
+    if player == "2"
+    return 5
+    elsif player == "3"
+    return 6
+  else
+    return 4
+    end
   end
 end
 
