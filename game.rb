@@ -1,5 +1,6 @@
 require_relative 'helper'
 require_relative 'file'
+require_relative 'player'
 require 'pry'
 class Game
 attr_accessor :user_name, :user_level
@@ -12,7 +13,6 @@ attr_accessor :user_name, :user_level
   def welcome
     puts Message.welcome
     input = gets.chomp
-    puts ReadFile.test_check(input)
     case input
     when "p"
       choose_level
@@ -52,6 +52,7 @@ end
     until trial_count >= 12
       user_guess = gets.chomp
       userchoice = user_guess.upcase.split("")
+      evaluate_guess(user_guess)
         if user_guess == "q"
           system(exit)
         elsif user_guess == "c"
@@ -60,14 +61,19 @@ end
             puts "Letter count not enough increase by #{computer_choice_array_length(@player[:level])}"
       elsif @computer_code != @result[:matches]
         puts "Try again"
-        evaluate_guess(user_guess)
         puts "your choices #{userchoice} matched#{@result[:matches]} is #{trial_count}"
          trial_count += 1
          #binding.pry
        elsif @computer_code == @result[:matches]
                puts "Congratulations you have completed the game in #{trial_count}"
              @player[:end_time] = Time.now
-             @player[:trial_count] = trial_count
+             name = @player[:name]
+             computer_code = @computer_code
+             level = @player[:level]
+             total_time = Time.now.to_i - @player[:start_time].to_i
+             current_player = Player.new(name, user_level)
+             ReadFile.header_message(current_player, computer_code, trial_count, total_time)
+             ReadFile.add_records(current_player, computer_code, trial_count, total_time)
              system(exit)
       end
     end
@@ -101,17 +107,6 @@ end
 
   def too_short(user_guess)
     user_guess.length < computer_choice_array_length(@player[:level])
-  end
-
-  def gather_details
-    name = @player[:name]
-    computer_code = @computer_code
-    end_time = @player[:end_time]
-    start_time = @player[:start_time]
-    trial_count = @player[:trial_count]
-    ReadFile.add_record(name, computer_code, end_time, start_time, trial_count)
-    ReadFile.show_top_ten
-    ReadFile.save_new_top_ten
   end
 
   def computer_choice_array_length(player)
