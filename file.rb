@@ -31,7 +31,7 @@ class ReadFile
   def self.header_message(current_player, computer_code, trial_count, total_time)
     puts "====================== TOP TEN GAMERS =========================="
     puts "                                                                  "
-    puts "#{current_player.name.capitalize}, you guessed the sequence #{computer_code} in #{self.covert_time_to_string(total_time)}.\n The average time is #{self.average_time} and the average guesses is#{self.average_guesses}"
+    puts "#{current_player.name.capitalize}, you guessed the sequence #{computer_code.join("")} in #{self.covert_time_to_string(total_time)}.\n The average time is #{self.average_time} and the average guesses is#{self.average_guesses}"
   end
 
 

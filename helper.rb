@@ -1,7 +1,8 @@
+require 'colorize'
 class Message
     def self.welcome
-        %q{Would you like to (p)lay, read the (i)nstructions,
-          read a little (b)ackground on MasterMind or (q)uit?}
+        "Would you like to"+ "(p)lay".green+", read the" +"(i)nstructions".yellow+",
+        read a little"+ "(b)ackground".blue+ " on MasterMind or"+ "(q)uit?".red
     end
 
     def self.choose_level
