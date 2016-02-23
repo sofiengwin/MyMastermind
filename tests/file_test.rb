@@ -9,6 +9,7 @@ class ReadFile < Minitest::Test
 
   def class_exits
     assert ReadFile
+    
   end
 
   def convert_time_to_string
